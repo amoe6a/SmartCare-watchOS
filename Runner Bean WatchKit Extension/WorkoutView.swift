@@ -2,8 +2,6 @@
 //  WorkoutView.swift
 //  Runner Bean WatchKit Extension
 //
-//  Created by Adrian Eves on 11/11/20.
-//
 
 import SwiftUI
 
@@ -15,19 +13,24 @@ struct WorkoutView: View {
     @State private var workoutState: WorkoutState = .active
     @ObservedObject var healthManager: HealthManager
     
-    var distanceQuantity: String {
-        let miles = healthManager.totalDistance
-        var distanceString = String(format: "%.2f", miles)
-        if miles >= 10 {
-            distanceString = String(format: "%.1f", miles)
-        }
-        return distanceString
-    }
-    var calorieQuantity: String {
-        return String(format: "%.0f", healthManager.totalEnergyBurned)
-    }
+//    var distanceQuantity: String {
+//        let miles = healthManager.totalDistance
+//        var distanceString = String(format: "%.2f", miles)
+//        if miles >= 10 {
+//            distanceString = String(format: "%.1f", miles)
+//        }
+//        return distanceString
+//    }
+//    var calorieQuantity: String {
+//        return String(format: "%.0f", healthManager.totalEnergyBurned)
+//    }
     var heartRateQuantity: String {
         return String(Int(healthManager.lastHeartRate))
+    }
+    
+    var heartRateValues : String {
+        return
+            String(healthManager.doubleToStringArray(arr: healthManager.heartRateValuesArray).suffix(5) .joined(separator: ", "))
     }
     
     var body: some View {
@@ -36,12 +39,16 @@ struct WorkoutView: View {
             HStack {
                 StatisticView(quantity: heartRateQuantity, unit: "BPM")
                     .foregroundColor(.red)
+//                Spacer()
+//                StatisticView(quantity: calorieQuantity, unit: "cal")
+//                    .foregroundColor(.yellow)
+//                Spacer()
+//                StatisticView(quantity: distanceQuantity, unit: "mi")
+//                    .foregroundColor(.blue)
                 Spacer()
-                StatisticView(quantity: calorieQuantity, unit: "cal")
-                    .foregroundColor(.yellow)
-                Spacer()
-                StatisticView(quantity: distanceQuantity, unit: "mi")
+                ArrayView(quantity: heartRateValues, unit: "Last Vals")
                     .foregroundColor(.blue)
+                
             }
             
             Spacer()
@@ -83,6 +90,21 @@ struct StatisticView: View {
             Text("\(quantity)")
                 .font(.title2)
                 .fontWeight(.bold)
+            Text("\(unit)".uppercased())
+                .font(.caption)
+                .fontWeight(.light)
+        }
+    }
+}
+
+struct ArrayView: View {
+    var quantity: String
+    var unit: String
+    var body: some View {
+        VStack {
+            Text("\(quantity)")
+                .font(.title3)
+                .fontWeight(.light)
             Text("\(unit)".uppercased())
                 .font(.caption)
                 .fontWeight(.light)
