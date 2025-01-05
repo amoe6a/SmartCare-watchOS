@@ -2,8 +2,6 @@
 //  HealthManager.swift
 //  Runner Bean WatchKit Extension
 //
-//  Created by Adrian Eves on 11/11/20.
-//
 
 import Foundation
 import HealthKit
@@ -25,6 +23,7 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
     @Published var totalEnergyBurned = 0.0
     @Published var totalDistance = 0.0
     @Published var lastHeartRate = 0.0
+    @Published var heartRateValuesArray: [Double] = []
     
     func start() {
         let sampleTypes: Set<HKSampleType> = [
@@ -43,8 +42,8 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
     
     private func beginWorkout() {
         let config = HKWorkoutConfiguration()
-        config.activityType = activity
-        config.locationType = .outdoor
+        config.activityType = .other
+        config.locationType = .indoor
         
         
         do {
@@ -104,15 +103,25 @@ class HealthManager: NSObject, ObservableObject, HKWorkoutSessionDelegate, HKLiv
                 case HKQuantityType.quantityType(forIdentifier: .heartRate):
                     let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
                     self.lastHeartRate = statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0
-                case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
-                    let value = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
-                    self.totalEnergyBurned = value
+                    self.heartRateValuesArray.append(self.lastHeartRate)
+//                case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
+//                    let value = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
+//                    self.totalEnergyBurned = value
                 default:
-                    let value = statistics.sumQuantity()?.doubleValue(for: .mile())
-                    self.totalDistance = value ?? 0
+                    while(false) {continue}
+//                    let value = statistics.sumQuantity()?.doubleValue(for: .mile())
+//                    self.totalDistance = value ?? 0
                 }
             }
         }
+    }
+    
+    func doubleToStringArray(arr: [Double]) -> [String] {
+        var tmp: [String] = []
+        for each in arr {
+            tmp.append(String(format:"%.2f", each))
+        }
+        return tmp
     }
     
     func pause() {
